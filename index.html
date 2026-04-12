@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Saransh Gupta — Developer CV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --accent: #00f5d4;
+  --accent2: #7c3aed;
+  --bg: #09090f;
+  --bg2: #111119;
+  --bg3: #1a1a24;
+  --border: rgba(255,255,255,0.08);
+  --text: #f0f0f8;
+  --muted: #7a7a9a;
+  --dim: #3a3a5a;
+  --glow: 0 0 20px rgba(0,245,212,0.25);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ===== PRINT BUTTON BAR ===== */
+#cv-toolbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 52px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  z-index: 1000;
+  backdrop-filter: blur(12px);
+}
+
+.toolbar-brand {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.btn-cv {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.btn-download {
+  background: var(--accent);
+  color: #000;
+  box-shadow: var(--glow);
+}
+.btn-download:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.btn-ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* ===== CV WRAPPER ===== */
+#cv-wrapper {
+  margin-top: 52px;
+  min-height: calc(100vh - 52px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 24px 80px;
+}
+
+/* ===== CV PAPER ===== */
+#cv-paper {
+  width: 100%;
+  max-width: 860px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+/* ===== HEADER ===== */
+.cv-header {
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  padding: 48px 52px 44px;
+  position: relative;
+  overflow: hidden;
+}
+
+.cv-header::before {
+  content: '';
+  position: absolute;
+  top: -120px; right: -120px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(0,245,212,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.cv-header::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: -80px;
+  width: 250px; height: 250px;
+  background: radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.header-left {}
+
+.cv-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -1px;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.cv-name .accent { color: var(--accent); }
+
+.cv-role {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+
+.cv-tagline {
+  font-size: 0.9rem;
+  color: var(--muted);
+  max-width: 420px;
+  line-height: 1.7;
+}
+
+.header-right {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+  position: relative;
+  z-index: 1;
+}
+
+.cv-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.cv-contact-item:hover { color: var(--accent); }
+
+.cv-contact-item svg {
+  width: 13px; height: 13px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.header-badges {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: rgba(0,245,212,0.08);
+  border: 1px solid rgba(0,245,212,0.2);
+  border-radius: 100px;
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.5px;
+}
+
+.badge-purple {
+  background: rgba(124,58,237,0.08);
+  border-color: rgba(124,58,237,0.2);
+  color: #a78bfa;
+}
+
+/* ===== CV BODY ===== */
+.cv-body {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 0;
+}
+
+/* ===== MAIN COLUMN ===== */
+.cv-main {
+  padding: 44px 44px 44px 52px;
+  border-right: 1px solid var(--border);
+}
+
+/* ===== SIDEBAR COLUMN ===== */
+.cv-side {
+  padding: 44px 36px 44px 32px;
+  background: var(--bg);
+}
+
+/* ===== SECTION ===== */
+.cv-section {
+  margin-bottom: 40px;
+}
+
+.cv-section:last-child { margin-bottom: 0; }
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.section-icon {
+  width: 28px; height: 28px;
+  background: rgba(0,245,212,0.1);
+  border: 1px solid rgba(0,245,212,0.2);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.section-icon svg {
+  width: 13px; height: 13px;
+  color: var(--accent);
+}
+
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--muted);
+}
+
+.section-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ===== SUMMARY ===== */
+.cv-summary {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.cv-summary strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* ===== PROJECT CARDS ===== */
+.project-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px 24px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.project-card:hover {
+  border-color: rgba(0,245,212,0.3);
+  box-shadow: 0 4px 24px rgba(0,245,212,0.06);
+}
+
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--accent);
+  border-radius: 0 2px 2px 0;
+}
+
+.project-card.purple::before {
+  background: #a78bfa;
+}
+
+.project-card.orange::before {
+  background: #fb923c;
+}
+
+.project-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.project-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.project-link {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.project-link:hover { color: var(--accent); }
+
+.project-desc {
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+
+.project-bullets {
+  list-style: none;
+  margin-bottom: 14px;
+}
+
+.project-bullets li {
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.7;
+  padding-left: 16px;
+  position: relative;
+  margin-bottom: 4px;
+}
+
+.project-bullets li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-size: 0.65rem;
+  top: 3px;
+}
+
+.project-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.67rem;
+  padding: 3px 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--dim);
+  letter-spacing: 0.3px;
+}
+
+/* ===== EDUCATION ===== */
+.edu-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 22px;
+  position: relative;
+  overflow: hidden;
+}
+
+.edu-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: #fb923c;
+  border-radius: 0 2px 2px 0;
+}
+
+.edu-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.edu-detail {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+
+.edu-year {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: #fb923c;
+  letter-spacing: 1px;
+}
+
+/* ===== SIDEBAR SKILLS ===== */
+.skill-group {
+  margin-bottom: 28px;
+}
+
+.skill-group-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  color: var(--dim);
+  margin-bottom: 12px;
+}
+
+.skill-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skill-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.skill-name {
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  min-width: 80px;
+}
+
+.skill-bar-wrap {
+  flex: 1;
+  height: 4px;
+  background: var(--bg3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.skill-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 1.2s cubic-bezier(.4,0,.2,1) 0.3s;
+}
+
+/* ===== TOOL TAGS ===== */
+.tool-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.tool-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  padding: 5px 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+}
+
+/* ===== STAT GRID ===== */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.stat-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 14px 12px;
+  text-align: center;
+}
+
+.stat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+/* ===== SIDE CONTACT ===== */
+.side-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  text-decoration: none;
+}
+
+.sci-icon {
+  width: 28px; height: 28px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.sci-icon svg {
+  width: 13px; height: 13px;
+  color: var(--accent);
+}
+
+.sci-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+/* ===== AVAILABILITY BADGE ===== */
+.avail-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(0,245,212,0.06);
+  border: 1px solid rgba(0,245,212,0.15);
+  border-radius: 10px;
+  margin-top: 24px;
+}
+
+.avail-dot {
+  width: 7px; height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse-dot 2s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.avail-text {
+  font-size: 0.75rem;
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  #cv-toolbar { display: none !important; }
+  #cv-wrapper { margin-top: 0; padding: 0; }
+  #cv-paper {
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    max-width: 100%;
+  }
+  body { background: white; }
+  :root {
+    --bg: #fff;
+    --bg2: #fff;
+    --bg3: #f8f8f8;
+    --border: #e0e0e0;
+    --text: #111;
+    --muted: #555;
+    --dim: #888;
+    --accent: #007a6a;
+    --glow: none;
+  }
+  .project-card:hover { border-color: var(--border); box-shadow: none; }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 700px) {
+  .cv-body { grid-template-columns: 1fr; }
+  .cv-side {
+    border-top: 1px solid var(--border);
+    border-right: none;
+  }
+  .cv-main { padding: 32px 24px; }
+  .cv-side { padding: 32px 24px; }
+  .cv-header { padding: 36px 24px 32px; }
+  .header-top { flex-direction: column; }
+  .header-right { align-items: flex-start; }
+  .cv-name { font-size: 2rem; }
+  #cv-toolbar { padding: 0 16px; }
+  .toolbar-brand { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<div id="cv-toolbar">
+  <div class="toolbar-brand">CV / Resume</div>
+  <div class="toolbar-actions">
+    <button class="btn-cv btn-ghost" onclick="window.print()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print / Save PDF
+    </button>
+    <button class="btn-cv btn-download" onclick="downloadCV()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download HTML
+    </button>
+  </div>
+</div>
+
+<!-- CV WRAPPER -->
+<div id="cv-wrapper">
+<div id="cv-paper">
+
+  <!-- HEADER -->
+  <header class="cv-header">
+    <div class="header-top">
+      <div class="header-left">
+        <div class="cv-role">// Aspiring Developer &amp; Builder</div>
+        <h1 class="cv-name">Saransh<br><span class="accent">Gupta</span></h1>
+        <p class="cv-tagline">
+          Self-taught developer building real-world tools and open-source projects at 16.
+          Passionate about clean code, great UX, and turning ideas into working software.
+        </p>
+        <div class="header-badges">
+          <span class="badge">&#128205; India</span>
+          <span class="badge">&#127979; Class X Student</span>
+          <span class="badge badge-purple">&#128279; Open Source</span>
+          <span class="badge">&#9996; Open to Internships</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <a href="mailto:saransh10gahoi@gmail.com" class="cv-contact-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          saransh10gahoi@gmail.com
+        </a>
+        <a href="https://github.com/saransh-ops" class="cv-contact-item" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          github.com/saransh-ops
+        </a>
+        <a href="https://instagram.com/sar_ansh_gup_ta" class="cv-contact-item" target="_blank">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          @sar_ansh_gup_ta
+        </a>
+        <a href="https://discord.com/users/Godkiller_saransh" class="cv-contact-item" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.08.11 18.1.13 18.114a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+          Godkiller_saransh
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- BODY -->
+  <div class="cv-body">
+
+    <!-- MAIN COLUMN -->
+    <main class="cv-main">
+
+      <!-- SUMMARY -->
+      <section class="cv-section">
+        <div class="section-head">
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </div>
+          <span class="section-title">Profile</span>
+          <div class="section-line"></div>
+        </div>
+        <p class="cv-summary">
+          I'm a <strong>self-taught developer</strong> who started coding out of curiosity and never stopped.
+          I build things that actually work — from <strong>Minecraft server infrastructure</strong> to
+          <strong>open-source CLI tools</strong> to <strong>full-featured web apps</strong> with animations,
+          themes, and multi-language support. I don't wait for a classroom to teach me —
+          I pick up what I need, break things, fix them, and ship. Currently looking for
+          <strong>internship opportunities</strong> and open-source collaborations where I can
+          contribute real value.
+        </p>
+      </section>
+
+      <!-- PROJECTS -->
+      <section class="cv-section">
+        <div class="section-head">
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          </div>
+          <span class="section-title">Projects</span>
+          <div class="section-line"></div>
+        </div>
+
+        <!-- Project 1 -->
+        <div class="project-card">
+          <div class="project-header">
+            <div class="project-name">PyCraftHub</div>
+            <a href="https://github.com/saransh-ops/PyCraftHub" class="project-link" target="_blank">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              github
+            </a>
+          </div>
+          <p class="project-desc">An open-source Python-based Minecraft server manager designed to simplify server deployment, modpack configuration, and runtime management — built from real operational experience running servers.</p>
+          <ul class="project-bullets">
+            <li>Designed a CLI interface for automated server setup, startup sequencing, and graceful shutdown</li>
+            <li>Implemented modpack configuration management with version-locking and dependency resolution</li>
+            <li>Built troubleshooting utilities for common server crash patterns and memory issues</li>
+            <li>Structured as an open-source project with clean module separation and public documentation</li>
+          </ul>
+          <div class="project-tags">
+            <span class="tag">Python</span>
+            <span class="tag">CLI</span>
+            <span class="tag">Open Source</span>
+            <span class="tag">Server Mgmt</span>
+            <span class="tag">Git</span>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="project-card purple">
+          <div class="project-header">
+            <div class="project-name">Developer Portfolio — v2</div>
+            <a href="#" class="project-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              live
+            </a>
+          </div>
+          <p class="project-desc">A fully custom portfolio website built from scratch — no frameworks, no templates. Features a full design system with dark/light theming, accent color switching, bilingual (EN/हिंदी) i18n support, and polished scroll-triggered animations.</p>
+          <ul class="project-bullets">
+            <li>Implemented a CSS variable-driven theme engine supporting 2 themes × 5 accent colors with zero reloads</li>
+            <li>Built a custom i18n system translating all UI text dynamically between English and Hindi</li>
+            <li>Designed and coded scroll-reveal animations and a typewriter effect without any animation libraries</li>
+            <li>Fully responsive layout with a collapsible sidebar nav, mobile topbar, and adaptive grid sections</li>
+            <li>Added a settings panel with persistent preferences stored in localStorage</li>
+          </ul>
+          <div class="project-tags">
+            <span class="tag">HTML</span>
+            <span class="tag">CSS</span>
+            <span class="tag">JavaScript</span>
+            <span class="tag">i18n</span>
+            <span class="tag">CSS Variables</span>
+            <span class="tag">Responsive</span>
+          </div>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="project-card orange">
+          <div class="project-header">
+            <div class="project-name">MC Mod RP Updater</div>
+            <a href="https://mcmodrpupdater.vercel.app/" class="project-link" target="_blank">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              live site
+            </a>
+          </div>
+          <p class="project-desc">A browser-based tool that checks Minecraft mods and resource packs for updates using the Modrinth API — no installation needed. Drop your files in, pick your version and loader, and instantly see what's outdated, up to date, or unavailable.</p>
+          <ul class="project-bullets">
+            <li>Integrated the Modrinth public API to fetch version data and compare against locally loaded mod files</li>
+            <li>Implemented client-side SHA-1 hashing so actual mod files are never uploaded — only the hash is sent</li>
+            <li>Built a full UI with drag-and-drop upload zones, tabbed Mods / Resource Packs views, and status badges</li>
+            <li>Added bulk download: one-click ZIP of all updated mods or only the ones that need updating</li>
+            <li>Deployed on Vercel with zero backend — entirely serverless and privacy-respecting</li>
+          </ul>
+          <div class="project-tags">
+            <span class="tag">JavaScript</span>
+            <span class="tag">Modrinth API</span>
+            <span class="tag">SHA-1 Hashing</span>
+            <span class="tag">Drag & Drop</span>
+            <span class="tag">Vercel</span>
+            <span class="tag">No Backend</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- EDUCATION -->
+      <section class="cv-section">
+        <div class="section-head">
+          <div class="section-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </div>
+          <span class="section-title">Education</span>
+          <div class="section-line"></div>
+        </div>
+        <div class="edu-card">
+          <div class="edu-name">Class X — Secondary Education</div>
+          <div class="edu-detail">Central Board of Secondary Education (CBSE) · India</div>
+          <div class="edu-year">2024 – 2025 · In Progress</div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- SIDEBAR -->
+    <aside class="cv-side">
+
+      <!-- STATS -->
+      <section class="cv-section">
+        <div class="section-head">
+          <span class="section-title">At a Glance</span>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-num">3+</div>
+            <div class="stat-label">Projects Shipped</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">2+</div>
+            <div class="stat-label">Years Building</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">OS</div>
+            <div class="stat-label">Open Source</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">16</div>
+            <div class="stat-label">Years Old</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SKILLS -->
+      <section class="cv-section">
+        <div class="section-head">
+          <span class="section-title">Skills</span>
+        </div>
+
+        <div class="skill-group">
+          <div class="skill-group-title">Frontend</div>
+          <div class="skill-list">
+            <div class="skill-row">
+              <span class="skill-name">HTML/CSS</span>
+              <div class="skill-bar-wrap"><div class="skill-fill" style="width:88%"></div></div>
+            </div>
+            <div class="skill-row">
+              <span class="skill-name">JavaScript</span>
+              <div class="skill-bar-wrap"><div class="skill-fill" style="width:74%"></div></div>
+            </div>
+            <div class="skill-row">
+              <span class="skill-name">React</span>
+              <div class="skill-bar-wrap"><div class="skill-fill" style="width:45%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-group">
+          <div class="skill-group-title">Backend / Scripting</div>
+          <div class="skill-list">
+            <div class="skill-row">
+              <span class="skill-name">Python</span>
+              <div class="skill-bar-wrap"><div class="skill-fill" style="width:72%"></div></div>
+            </div>
+            <div class="skill-row">
+              <span class="skill-name">APIs</span>
+              <div class="skill-bar-wrap"><div class="skill-fill" style="width:60%"></div></div>
+            </div>
+            <div class="skill-row">
+              <span class="skill-name">Backend</span>
+              <div class="skill-bar-wrap"><div class="skill-fill" style="width:40%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-group">
+          <div class="skill-group-title">Tools &amp; Ops</div>
+          <div class="tool-tags">
+            <span class="tool-tag">Git</span>
+            <span class="tool-tag">VS Code</span>
+            <span class="tool-tag">Linux</span>
+            <span class="tool-tag">SSH</span>
+            <span class="tool-tag">GitHub</span>
+            <span class="tool-tag">CLI</span>
+            <span class="tool-tag">npm</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- LANGUAGES -->
+      <section class="cv-section">
+        <div class="section-head">
+          <span class="section-title">Languages</span>
+        </div>
+        <div class="tool-tags">
+          <span class="tool-tag">Hindi — Native</span>
+          <span class="tool-tag">English — Fluent</span>
+        </div>
+      </section>
+
+      <!-- INTERESTS -->
+      <section class="cv-section">
+        <div class="section-head">
+          <span class="section-title">Interests</span>
+        </div>
+        <div class="tool-tags">
+          <span class="tool-tag">Open Source</span>
+          <span class="tool-tag">UI/UX</span>
+          <span class="tool-tag">Gaming</span>
+          <span class="tool-tag">DevOps</span>
+          <span class="tool-tag">System Design</span>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section class="cv-section">
+        <div class="section-head">
+          <span class="section-title">Contact</span>
+        </div>
+        <a href="https://github.com/saransh-ops" class="side-contact-item" target="_blank">
+          <div class="sci-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          </div>
+          <span class="sci-text">saransh-ops</span>
+        </a>
+        <a href="https://instagram.com/sar_ansh_gup_ta" class="side-contact-item" target="_blank">
+          <div class="sci-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </div>
+          <span class="sci-text">@sar_ansh_gup_ta</span>
+        </a>
+        <a href="https://discord.com/users/Godkiller_saransh" class="side-contact-item" target="_blank">
+          <div class="sci-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.08.11 18.1.13 18.114a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+          </div>
+          <span class="sci-text">Godkiller_saransh</span>
+        </a>
+      </section>
+
+      <div class="avail-badge">
+        <div class="avail-dot"></div>
+        <span class="avail-text">Open to internships &amp; freelance</span>
+      </div>
+
+    </aside>
+  </div>
+
+</div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+function downloadCV() {
+  const html = document.documentElement.outerHTML;
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = docum
