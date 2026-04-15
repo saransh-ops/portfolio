@@ -1164,7 +1164,8 @@ section {
       <p style="color:var(--text-muted);font-size:0.95rem;max-width:500px;line-height:1.8;margin-bottom:48px;" data-i18n="contact_p">I'm always open to new opportunities, collaborations, or just a friendly chat. Feel free to reach out through any of these!</p>
     </div>
 
-    <div class="contact-cards-grid reveal">
+    <div class="contact-grid reveal">
+      <div class="contact-cards-grid">
       <a href="mailto:saransh10gahoi@gmail.com" class="contact-card">
         <div class="contact-card-icon"><i class="fa-solid fa-envelope"></i></div>
         <div class="contact-card-body">
@@ -1200,6 +1201,26 @@ section {
         </div>
         <i class="fa-solid fa-arrow-right contact-card-arrow"></i>
       </a>
+      </div>
+
+      <!-- THE HTML FORM -->
+      <form class="contact-form" id="contactForm">
+        <div class="form-group">
+          <label data-i18n="form_name">Name</label>
+          <input type="text" id="senderName" name="name" required placeholder="ex. John Doe" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="form_email">Email</label>
+          <input type="email" id="senderEmail" name="email" required placeholder="hello@example.com" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="form_msg">Message</label>
+          <textarea id="senderMessage" name="message" required placeholder="Write your message here..."></textarea>
+        </div>
+        <div class="form-submit">
+          <button type="submit" class="btn btn-primary" id="submitBtn" data-i18n="form_send">Send Message</button>
+        </div>
+      </form>
     </div>
   </section>
 
@@ -1487,17 +1508,54 @@ function setLang(lang) {
 }
 
 // ===== FORM SUBMIT FEEDBACK =====
-function handleFormSubmit(btn) {
-  var original = btn.textContent;
-  btn.textContent = '✓ Sent!';
-  btn.style.opacity = '0.7';
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwo40OsvOUJVtIO3RD4cl4Y640MreFUEgWq5qFp-e2hrX7rWqSINjfsKvmyeHy-FaM22A/exec"; // IMPORTANT: Replace this inside the quotes later
+
+document.getElementById("contactForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  
+  var btn = document.getElementById("submitBtn");
+  var originalText = btn.textContent;
+  btn.textContent = "Sending...";
+  btn.style.opacity = "0.7";
   btn.disabled = true;
-  setTimeout(function() {
-    btn.textContent = original;
-    btn.style.opacity = '1';
+
+  if (GOOGLE_SCRIPT_URL === "https://script.google.com/macros/s/AKfycbwo40OsvOUJVtIO3RD4cl4Y640MreFUEgWq5qFp-e2hrX7rWqSINjfsKvmyeHy-FaM22A/exec") {
+    alert("DEVELOPER NOTE: The Google Script URL is missing. Replace 'https://script.google.com/macros/s/AKfycbwo40OsvOUJVtIO3RD4cl4Y640MreFUEgWq5qFp-e2hrX7rWqSINjfsKvmyeHy-FaM22A/exec' in the code to make it functional.");
+    btn.textContent = originalText;
+    btn.style.opacity = "1";
     btn.disabled = false;
-  }, 2500);
-}
+    return;
+  }
+
+  var formData = new FormData(this);
+  
+  // Submit silently using mode: no-cors (Google Script redirects POSTs which causes standard CORS errors, no-cors patches this seamlessly)
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    body: formData
+  }).then(function() {
+    btn.textContent = "✓ Sent Successfully!";
+    btn.style.background = "#28a745"; // Green success color
+    btn.style.color = "#fff";
+    document.getElementById("contactForm").reset();
+    
+    setTimeout(function() {
+      btn.textContent = originalText;
+      btn.style.opacity = "1";
+      btn.disabled = false;
+      btn.style.background = ""; // Revert to default
+      btn.style.color = "";
+    }, 3000);
+  }).catch(function(error) {
+    btn.textContent = "❌ Error";
+    setTimeout(function() {
+      btn.textContent = originalText;
+      btn.style.opacity = "1";
+      btn.disabled = false;
+    }, 3000);
+  });
+});
 
 // ===== LOAD & APPLY ALL SAVED SETTINGS =====
 function loadSettings() {
