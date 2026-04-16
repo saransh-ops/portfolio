@@ -1875,8 +1875,12 @@
             <button class="btn btn-primary" onclick="lookupTicket()">Search</button>
           </div>
         </div>
-        <div id="ticketResult" style="display: none; padding: 20px; border-radius: 12px; background: var(--bg2); border: 1px solid var(--glass-border);">
+        <div id="ticketResult" style="display: none; padding: 20px; border-radius: 12px; background: var(--bg2); border: 1px solid var(--glass-border); position: relative;">
           <!-- Results populated by JS -->
+          <div id="liveSyncStatus" style="display: none; position: absolute; top: 10px; right: 20px; font-size: 0.65rem; color: var(--accent); align-items: center; gap: 6px;">
+            <span style="display: inline-block; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; box-shadow: var(--accent-glow); animation: pulse 2s infinite;"></span>
+            <span id="syncText">Live Sync: 5s</span>
+          </div>
         </div>
       </div>
 
@@ -2243,6 +2247,10 @@
     });
 
     // ===== TICKET LOGIC =====
+    let refreshIntervalId = null;
+    let countdown = 5;
+    let currentTicketId = null;
+
     function openTicketSearch() {
       document.getElementById('ticketSearchArea').style.display = 'block';
       document.getElementById('ticketSearchArea').scrollIntoView({ behavior: 'smooth' });
@@ -2250,6 +2258,7 @@
 
     function closeTicketSearch() {
       document.getElementById('ticketSearchArea').style.display = 'none';
+      stopLiveRefresh();
     }
 
     function closeSuccessModal() {
@@ -2263,20 +2272,28 @@
       });
     }
 
-    function lookupTicket() {
-      const id = document.getElementById("ticketIdInput").value.trim();
+    function lookupTicket(isSilent = false) {
+      const id = isSilent ? currentTicketId : document.getElementById("ticketIdInput").value.trim();
       const resultDiv = document.getElementById("ticketResult");
       
-      if (!id) return alert("Please enter a Ticket ID");
+      if (!id) {
+        if (!isSilent) alert("Please enter a Ticket ID");
+        return;
+      }
       
+      currentTicketId = id;
       resultDiv.style.display = "block";
-      resultDiv.innerHTML = '<div style="text-align:center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> Searching...</div>';
+      
+      if (!isSilent) {
+        resultDiv.innerHTML = '<div style="text-align:center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> Searching...</div>';
+      }
 
       fetch(`${GOOGLE_SCRIPT_URL}?ticketId=${encodeURIComponent(id)}`)
         .then(res => res.json())
         .then(data => {
           if (data.result === "error") {
-            resultDiv.innerHTML = `<div style="color:#ff4d4d; text-align:center;">${data.message}</div>`;
+            if (!isSilent) resultDiv.innerHTML = `<div style="color:#ff4d4d; text-align:center;">${data.message}</div>`;
+            stopLiveRefresh();
           } else {
             const msgStr = data.Message || data.message || "";
             const replyStr = data.Reply || data.reply || "";
@@ -2319,35 +2336,96 @@
               chatHtml = '<div style="text-align:center; color:var(--text-dim); padding:20px;">No message history found.</div>';
             }
 
-            resultDiv.innerHTML = `
-              <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:0.75rem; color:var(--text-dim);">Ticket ID: ${tId}</span>
-                <span style="font-size:0.7rem; padding:4px 10px; border-radius:100px; background:${statusColor}22; color:${statusColor}; border:1px solid ${statusColor}44;">${status}</span>
-              </div>
+            // Only update DOM if it hasn't been cleared for another manual search
+            if (currentTicketId !== id) return;
 
-              <div class="chat-container" id="chatContainer">
-                ${chatHtml}
-              </div>
+            // If silent update, we only update the chat container to prevent scroll jumps or clearing follows ups
+            if (isSilent && document.getElementById('chatContainer')) {
+               const chatContainer = document.getElementById('chatContainer');
+               const oldScrollHeight = chatContainer.scrollHeight;
+               const oldScrollTop = chatContainer.scrollTop;
+               const wasAtBottom = oldScrollTop + chatContainer.clientHeight >= oldScrollHeight - 20;
 
-              <!-- REPLY SECTION -->
-              <div style="border-top: 1px solid var(--glass-border); padding-top: 20px; margin-top:20px;">
-                <div style="font-size:0.75rem; color:var(--accent); margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; font-weight:700;">Send a Follow-up</div>
-                <textarea id="userFollowUp" placeholder="Type your message here..." style="width:100%; background:var(--bg2); border:1px solid var(--glass-border); border-radius:12px; padding:12px; color:var(--text); font-family:inherit; font-size:0.9rem; min-height:80px; margin-bottom:12px; outline:none; focus:border-color:var(--accent);"></textarea>
-                <button class="btn btn-primary" style="width:100%;" onclick="sendUserReply('${tId}')" id="userReplyBtn">Send Follow-up Message</button>
-              </div>
+               chatContainer.innerHTML = chatHtml;
 
-              <div style="font-size:0.65rem; color:var(--text-dim); margin-top:15px; text-align:right;">Last Sync: ${new Date().toLocaleTimeString()}</div>
-            `;
+               if (wasAtBottom) {
+                 chatContainer.scrollTop = chatContainer.scrollHeight;
+               }
+               // Update status badge and last sync
+               const statusBadge = resultDiv.querySelector('.status-badge');
+               if (statusBadge) {
+                 statusBadge.textContent = status;
+                 statusBadge.style.background = `${statusColor}22`;
+                 statusBadge.style.color = statusColor;
+                 statusBadge.style.borderColor = `${statusColor}44`;
+               }
+               const syncTime = document.getElementById('lastSyncTime');
+               if (syncTime) syncTime.textContent = new Date().toLocaleTimeString();
+               
+            } else {
+              resultDiv.innerHTML = `
+                <!-- STATUS HEADER -->
+                <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; padding-right: 80px;">
+                  <span style="font-size:0.75rem; color:var(--text-dim);">Ticket ID: ${tId}</span>
+                  <span class="status-badge" style="font-size:0.7rem; padding:4px 10px; border-radius:100px; background:${statusColor}22; color:${statusColor}; border:1px solid ${statusColor}44;">${status}</span>
+                </div>
 
-            // Scroll to bottom of chat
-            const cc = document.getElementById('chatContainer');
-            if (cc) cc.scrollTop = cc.scrollHeight;
+                <div class="chat-container" id="chatContainer">
+                  ${chatHtml}
+                </div>
+
+                <!-- REPLY SECTION -->
+                <div style="border-top: 1px solid var(--glass-border); padding-top: 20px; margin-top:20px;">
+                  <div style="font-size:0.75rem; color:var(--accent); margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; font-weight:700;">Send a Follow-up</div>
+                  <textarea id="userFollowUp" placeholder="Type your message here..." style="width:100%; background:var(--bg2); border:1px solid var(--glass-border); border-radius:12px; padding:12px; color:var(--text); font-family:inherit; font-size:0.9rem; min-height:80px; margin-bottom:12px; outline:none; focus:border-color:var(--accent);"></textarea>
+                  <button class="btn btn-primary" style="width:100%;" onclick="sendUserReply('${tId}')" id="userReplyBtn">Send Follow-up Message</button>
+                </div>
+
+                <div style="font-size:0.65rem; color:var(--text-dim); margin-top:15px; text-align:right;">Last Sync: <span id="lastSyncTime">${new Date().toLocaleTimeString()}</span></div>
+                
+                <!-- REFRESH STATUS UI -->
+                <div id="liveSyncStatus" style="position: absolute; top: 18px; right: 20px; font-size: 0.65rem; color: var(--accent); display: flex; align-items: center; gap: 6px;">
+                  <span style="display: inline-block; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; box-shadow: var(--accent-glow); animation: pulse 2s infinite;"></span>
+                  <span id="syncText">Live Sync: 5s</span>
+                </div>
+              `;
+
+              // Scroll to bottom
+              const chatContainer = document.getElementById('chatContainer');
+              if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+
+            startLiveRefresh();
           }
         })
         .catch(err => {
           console.error("Lookup error:", err);
-          resultDiv.innerHTML = `<div style="color:#ff4d4d; text-align:center;">Connection error or invalid Ticket ID format. Please try again.</div>`;
+          if (!isSilent) resultDiv.innerHTML = `<div style="color:#ff4d4d; text-align:center;">Connection error. Please try again.</div>`;
+          stopLiveRefresh();
         });
+    }
+
+    function startLiveRefresh() {
+      if (refreshIntervalId) clearInterval(refreshIntervalId);
+      countdown = 5;
+      refreshIntervalId = setInterval(() => {
+        countdown--;
+        const syncText = document.getElementById('syncText');
+        if (syncText) syncText.textContent = `Live Sync: ${countdown}s`;
+        
+        if (countdown <= 0) {
+          lookupTicket(true);
+          countdown = 5;
+        }
+      }, 1000);
+    }
+
+    function stopLiveRefresh() {
+      if (refreshIntervalId) {
+        clearInterval(refreshIntervalId);
+        refreshIntervalId = null;
+      }
+      currentTicketId = null;
     }
 
     function sendUserReply(ticketId) {
