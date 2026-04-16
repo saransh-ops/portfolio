@@ -1870,9 +1870,13 @@
         </div>
         <div class="form-group" style="margin-bottom: 20px;">
           <label>Enter Ticket ID</label>
-          <div style="display: flex; gap: 10px;">
+          <div style="display: flex; gap: 10px; align-items: center;">
             <input type="text" id="ticketIdInput" placeholder="ex. TKT-L9X8..." style="flex: 1;" />
             <button class="btn btn-primary" onclick="lookupTicket()">Search</button>
+          </div>
+          <div style="margin-top: 15px; display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--text-muted);">
+            <input type="checkbox" id="autoRefreshToggle" onchange="toggleAutoRefresh(this)" style="cursor: pointer; width: 16px; height: 16px; accent-color: var(--accent);">
+            <label for="autoRefreshToggle" style="cursor: pointer;">Enable Auto-Refresh (5s)</label>
           </div>
         </div>
         <div id="ticketResult" style="display: none; padding: 20px; border-radius: 12px; background: var(--bg2); border: 1px solid var(--glass-border); position: relative;">
@@ -2251,6 +2255,14 @@
     let countdown = 5;
     let currentTicketId = null;
 
+    function toggleAutoRefresh(cb) {
+      if (cb.checked) {
+        if (currentTicketId) startLiveRefresh();
+      } else {
+        stopLiveRefresh(false); // don't clear currentTicketId
+      }
+    }
+
     function openTicketSearch() {
       document.getElementById('ticketSearchArea').style.display = 'block';
       document.getElementById('ticketSearchArea').scrollIntoView({ behavior: 'smooth' });
@@ -2258,7 +2270,9 @@
 
     function closeTicketSearch() {
       document.getElementById('ticketSearchArea').style.display = 'none';
-      stopLiveRefresh();
+      stopLiveRefresh(true);
+      const cb = document.getElementById('autoRefreshToggle');
+      if (cb) cb.checked = false;
     }
 
     function closeSuccessModal() {
@@ -2288,7 +2302,9 @@
         resultDiv.innerHTML = '<div style="text-align:center; padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> Searching...</div>';
       }
 
-      fetch(`${GOOGLE_SCRIPT_URL}?ticketId=${encodeURIComponent(id)}`)
+      // Cache buster for reliable real-time updates
+      const fetchUrl = `${GOOGLE_SCRIPT_URL}?ticketId=${encodeURIComponent(id)}&_cb=${Date.now()}`;
+      fetch(fetchUrl)
         .then(res => res.json())
         .then(data => {
           if (data.result === "error") {
@@ -2395,7 +2411,14 @@
               if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
             }
 
-            startLiveRefresh();
+            const cb = document.getElementById('autoRefreshToggle');
+            if (cb && cb.checked) {
+              startLiveRefresh();
+            } else {
+              // Hide sync indicator if auto-refresh is off
+              const status = document.getElementById('liveSyncStatus');
+              if (status) status.style.display = 'none';
+            }
           }
         })
         .catch(err => {
@@ -2407,6 +2430,9 @@
 
     function startLiveRefresh() {
       if (refreshIntervalId) clearInterval(refreshIntervalId);
+      const statusUI = document.getElementById('liveSyncStatus');
+      if (statusUI) statusUI.style.display = 'flex';
+      
       countdown = 5;
       refreshIntervalId = setInterval(() => {
         countdown--;
@@ -2420,12 +2446,15 @@
       }, 1000);
     }
 
-    function stopLiveRefresh() {
+    function stopLiveRefresh(fullClear = true) {
       if (refreshIntervalId) {
         clearInterval(refreshIntervalId);
         refreshIntervalId = null;
       }
-      currentTicketId = null;
+      const statusUI = document.getElementById('liveSyncStatus');
+      if (statusUI) statusUI.style.display = 'none';
+      
+      if (fullClear) currentTicketId = null;
     }
 
     function sendUserReply(ticketId) {
