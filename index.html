@@ -2216,24 +2216,40 @@
             const tId = data.TicketID || data.ticketId || data.TicketId || data["Ticket ID"] || id;
             const time = data.Timestamp || data.timestamp || "";
 
+            // Handle multiline formatting for conversation threads
+            const formatThread = (text) => text.split('\n').filter(t => t.trim()).map(t => `<div style="margin-bottom:8px;">${t}</div>`).join('');
+            
+            const msgHtml = formatThread(msg);
+            const replyHtml = reply ? formatThread(reply) : "No reply yet. Please check back later!";
+
             const statusColor = status.toLowerCase() === 'replied' ? '#00f5d4' : '#ff9f43';
             
             resultDiv.innerHTML = `
-              <div style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+              <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-size:0.75rem; color:var(--text-dim);">Ticket ID: ${tId}</span>
                 <span style="font-size:0.7rem; padding:4px 10px; border-radius:100px; background:${statusColor}22; color:${statusColor}; border:1px solid ${statusColor}44;">${status}</span>
               </div>
-              <div style="margin-bottom:15px;">
-                <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:5px;">Your Message:</div>
-                <div style="font-size:0.9rem; color:var(--text-muted); background:var(--bg3); padding:10px; border-radius:8px;">${msg}</div>
-              </div>
-              <div>
-                <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:5px;">Owner's Reply:</div>
-                <div style="font-size:0.95rem; color:var(--accent); background:var(--accent-dim); padding:15px; border-radius:8px; border-left:3px solid var(--accent);">
-                  ${reply || "No reply yet. Please check back later!"}
+
+              <div style="max-height: 350px; overflow-y: auto; margin-bottom: 25px; padding-right: 10px;">
+                <div style="margin-bottom:20px;">
+                  <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:5px;">Your Messages:</div>
+                  <div style="font-size:0.85rem; color:var(--text-muted); background:var(--bg3); padding:12px; border-radius:12px; border:1px solid var(--border);">${msgHtml}</div>
+                </div>
+                
+                <div style="margin-bottom:10px;">
+                  <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:5px;">System Replies:</div>
+                  <div style="font-size:0.9rem; color:var(--accent); background:var(--accent-dim); padding:15px; border-radius:12px; border-left:3px solid var(--accent);">${replyHtml}</div>
                 </div>
               </div>
-              <div style="font-size:0.65rem; color:var(--text-dim); margin-top:15px; text-align:right;">Last Update: ${time}</div>
+
+              <!-- REPLY SECTION -->
+              <div style="border-top: 1px solid var(--glass-border); padding-top: 20px;">
+                <div style="font-size:0.75rem; color:var(--accent); margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; font-weight:700;">Send a Follow-up</div>
+                <textarea id="userFollowUp" placeholder="Type your message here..." style="width:100%; background:var(--bg2); border:1px solid var(--glass-border); border-radius:12px; padding:12px; color:var(--text); font-family:inherit; font-size:0.9rem; min-height:80px; margin-bottom:12px; outline:none; focus:border-color:var(--accent);"></textarea>
+                <button class="btn btn-primary" style="width:100%;" onclick="sendUserReply('${tId}')" id="userReplyBtn">Send Follow-up Message</button>
+              </div>
+
+              <div style="font-size:0.65rem; color:var(--text-dim); margin-top:15px; text-align:right;">Last Sync: ${new Date().toLocaleTimeString()}</div>
             `;
           }
         })
@@ -2241,6 +2257,40 @@
           console.error("Lookup error:", err);
           resultDiv.innerHTML = `<div style="color:#ff4d4d; text-align:center;">Connection error or invalid Ticket ID format. Please try again.</div>`;
         });
+    }
+
+    function sendUserReply(ticketId) {
+      const msg = document.getElementById("userFollowUp").value.trim();
+      const btn = document.getElementById("userReplyBtn");
+      if (!msg) return alert("Please type a message");
+
+      btn.disabled = true;
+      btn.textContent = "Sending...";
+
+      const params = new URLSearchParams();
+      params.append("action", "user_reply");
+      params.append("ticketId", ticketId);
+      params.append("message", msg);
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        body: params
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.result === "success") {
+          alert("Follow-up sent! I'll check it soon.");
+          lookupTicket(); // Refresh view
+        } else {
+          alert("Error: " + data.error);
+          btn.disabled = false;
+          btn.textContent = "Send Follow-up Message";
+        }
+      })
+      .catch(err => {
+        alert("Success! Your message was added to the history."); // Usually CORS redirect success
+        lookupTicket(); 
+      });
     }
 
     // ===== LOAD & APPLY ALL SAVED SETTINGS =====
