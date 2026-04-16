@@ -2316,17 +2316,36 @@
             const status = data.Status || data.status || "Open";
             const tId = data.TicketID || data.ticketId || id;
 
-            // COMBINED PARSING LOGIC
+            // COMBINED PARSING LOGIC — Supports ISO and old locale formats
             const parseMessages = (str) => {
               if (!str) return [];
               return str.split('\n').filter(line => line.trim()).map(line => {
                 const match = line.match(/^\[(.*?)\] \[(.*?)\]: (.*)$/);
                 if (match) {
+                  const dateStr = match[1];
+                  const role = match[2];
+                  const text = match[3];
+                  
+                  // Resilient date parsing
+                  let timestamp = new Date(dateStr).getTime();
+                  
+                  // If parsing fails (common with some locale formats), try a simpler approach
+                  if (isNaN(timestamp)) {
+                    // Try to extract date parts if format is M/D/YYYY, H:MM:SS
+                    const parts = dateStr.match(/(\d+)\/(\d+)\/(\d+)/);
+                    if (parts) {
+                      // Basic fallback: Year, Month-1, Day
+                      timestamp = new Date(parts[3], parts[1]-1, parts[2]).getTime();
+                    } else {
+                      timestamp = 0; // Absolute fallback
+                    }
+                  }
+
                   return {
-                    timeStr: match[1],
-                    role: match[2],
-                    text: match[3],
-                    timestamp: new Date(match[1]).getTime() || 0
+                    timeStr: dateStr,
+                    role: role,
+                    text: text,
+                    timestamp: timestamp
                   };
                 }
                 return null;
