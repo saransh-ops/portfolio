@@ -2209,28 +2209,37 @@
           if (data.result === "error") {
             resultDiv.innerHTML = `<div style="color:#ff4d4d; text-align:center;">${data.message}</div>`;
           } else {
-            const statusColor = data.Status === 'Replied' ? '#00f5d4' : '#ff9f43';
+            // Support variations in header capitalization from the Sheet
+            const msg = data.Message || data.message || data.MESSAGE || "No content";
+            const reply = data.Reply || data.reply || data.REPLY || "";
+            const status = data.Status || data.status || data.STATUS || "Unknown";
+            const tId = data.TicketID || data.ticketId || data.TicketId || data["Ticket ID"] || id;
+            const time = data.Timestamp || data.timestamp || "";
+
+            const statusColor = status.toLowerCase() === 'replied' ? '#00f5d4' : '#ff9f43';
+            
             resultDiv.innerHTML = `
               <div style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:0.75rem; color:var(--text-dim);">Ticket ID: ${data.TicketID}</span>
-                <span style="font-size:0.7rem; padding:4px 10px; border-radius:100px; background:${statusColor}22; color:${statusColor}; border:1px solid ${statusColor}44;">${data.Status}</span>
+                <span style="font-size:0.75rem; color:var(--text-dim);">Ticket ID: ${tId}</span>
+                <span style="font-size:0.7rem; padding:4px 10px; border-radius:100px; background:${statusColor}22; color:${statusColor}; border:1px solid ${statusColor}44;">${status}</span>
               </div>
               <div style="margin-bottom:15px;">
                 <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:5px;">Your Message:</div>
-                <div style="font-size:0.9rem; color:var(--text-muted); background:var(--bg3); padding:10px; border-radius:8px;">${data.Message}</div>
+                <div style="font-size:0.9rem; color:var(--text-muted); background:var(--bg3); padding:10px; border-radius:8px;">${msg}</div>
               </div>
               <div>
                 <div style="font-size:0.7rem; color:var(--text-dim); margin-bottom:5px;">Owner's Reply:</div>
                 <div style="font-size:0.95rem; color:var(--accent); background:var(--accent-dim); padding:15px; border-radius:8px; border-left:3px solid var(--accent);">
-                  ${data.Reply || "No reply yet. Please check back later!"}
+                  ${reply || "No reply yet. Please check back later!"}
                 </div>
               </div>
-              <div style="font-size:0.65rem; color:var(--text-dim); margin-top:15px; text-align:right;">Last Update: ${data.Timestamp}</div>
+              <div style="font-size:0.65rem; color:var(--text-dim); margin-top:15px; text-align:right;">Last Update: ${time}</div>
             `;
           }
         })
         .catch(err => {
-          resultDiv.innerHTML = `<div style="color:#ff4d4d; text-align:center;">Connection error. Please try again.</div>`;
+          console.error("Lookup error:", err);
+          resultDiv.innerHTML = `<div style="color:#ff4d4d; text-align:center;">Connection error or invalid Ticket ID format. Please try again.</div>`;
         });
     }
 
