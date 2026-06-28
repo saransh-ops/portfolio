@@ -4,6 +4,18 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Saransh Gupta — Developer & Designer</title>
+<script>
+// Apply last-known theme instantly (before paint) to avoid a flash of the default theme
+(function(){
+  try{
+    var t = JSON.parse(localStorage.getItem('site-theme-cache'));
+    if(t){
+      if(t.mode) document.documentElement.dataset.theme = t.mode;
+      if(t.accent) document.documentElement.dataset.accent = t.accent;
+    }
+  }catch(e){}
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
@@ -316,6 +328,24 @@ footer{margin-left:var(--nav-w);border-top:1px solid var(--glass-border);padding
     <div class="accent-dot" style="background:#f472b6" data-accent="pink" title="Pink"></div>
     <div class="accent-dot" style="background:#fb923c" data-accent="orange" title="Orange"></div>
     <div class="accent-dot" style="background:#a3e635" data-accent="lime" title="Lime"></div>
+    <div class="nav-sep" style="margin:.25rem 0"></div>
+    <div id="sync-toggle" title="Sync theme across my sites" style="cursor:pointer;color:var(--accent);font-size:.8rem"><i class="fa-solid fa-link"></i></div>
+    <div id="sync-code-btn" title="View/change Sync Code" style="cursor:pointer;color:var(--text-dim);font-size:.75rem;margin-top:2px" onclick="showSyncCodeUI()"><i class="fa-solid fa-key"></i></div>
+    <!-- Sync Code popup -->
+    <div id="sync-code-panel" style="display:none;position:fixed;left:70px;bottom:20px;background:#1a1d2e;border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:14px;width:240px;z-index:999;box-shadow:0 8px 32px rgba(0,0,0,0.6);font-size:12px">
+      <div style="font-weight:700;margin-bottom:8px;color:var(--accent)">🔗 Theme Sync Code</div>
+      <div style="color:#aaa;font-size:11px;margin-bottom:8px">Use this code on all your sites to sync your theme.</div>
+      <code id="sc-display" style="display:block;font-size:14px;font-weight:700;letter-spacing:3px;padding:6px 8px;background:rgba(0,0,0,0.3);border-radius:6px;margin-bottom:8px;color:var(--accent)"></code>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <button onclick="copyPortfolioCode()" style="flex:1;padding:5px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:#fff;cursor:pointer;font-size:11px">📋 Copy</button>
+        <button onclick="newPortfolioCode()" style="flex:1;padding:5px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:#fff;cursor:pointer;font-size:11px">🔄 New</button>
+      </div>
+      <input id="sc-input" placeholder="Enter code from another site" maxlength="7" style="width:100%;box-sizing:border-box;padding:5px 8px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#fff;font-family:monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px">
+      <div style="display:flex;gap:6px">
+        <button onclick="applyPortfolioCode()" style="flex:1;padding:5px;background:var(--accent);border:none;border-radius:6px;color:#000;cursor:pointer;font-size:11px;font-weight:700">Apply Code</button>
+        <button onclick="document.getElementById('sync-code-panel').style.display='none'" style="flex:0 0 auto;padding:5px 10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:#fff;cursor:pointer;font-size:11px">✕</button>
+      </div>
+    </div>
   </div>
 </nav>
 
@@ -500,6 +530,23 @@ footer{margin-left:var(--nav-w);border-top:1px solid var(--glass-border);padding
           <div class="proj-desc">A utility tool for Minecraft players that automates checking and updating modpacks and resource packs. Saves time for modded Minecraft communities by keeping everything in sync effortlessly.</div>
           <div class="proj-tags">
             <span class="proj-tag">Minecraft</span><span class="proj-tag">Automation</span><span class="proj-tag">Web Tool</span>
+          </div>
+        </div>
+      </div>
+    </div>
+      <div class="proj-card reveal-r">
+        <div class="proj-bar"></div>
+        <div class="proj-card-top">
+          <span class="proj-num">03</span>
+          <div class="proj-links">
+            <a href="https://mc-toolkit.vercel.app/" target="_blank" class="proj-link" title="Visit"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          </div>
+        </div>
+        <div class="proj-card-body">
+          <div class="proj-name">MC Toolkit</div>
+          <div class="proj-desc">An all-in-one web toolkit built for Minecraft server admins. Features a live server pinger, 3D player skin viewer, crash log analyser, JVM flags generator, MOTD builder, gradient generator, banner designer, and a server.properties editor — zero installs, 100% free. More tools coming soon.</div>
+          <div class="proj-tags">
+            <span class="proj-tag">Minecraft</span><span class="proj-tag">Web Tool</span><span class="proj-tag">HTML / JS</span><span class="proj-tag">Firebase</span>
           </div>
         </div>
       </div>
@@ -719,6 +766,7 @@ document.getElementById('theme-toggle').addEventListener('click',()=>{
   const html=document.documentElement;
   html.dataset.theme=html.dataset.theme==='dark'?'light':'dark';
   setTimeout(resizeC,100);
+  siteThemeSync.push();
 });
 
 // ACCENT PICKER
@@ -727,8 +775,105 @@ document.querySelectorAll('.accent-dot').forEach(d=>{
     document.querySelectorAll('.accent-dot').forEach(x=>x.classList.remove('active'));
     d.classList.add('active');
     document.documentElement.dataset.accent=d.dataset.accent;
+    siteThemeSync.push();
   });
 });
+
+/* ===== PER-USER CROSS-SITE THEME SYNC =====
+   Each user gets a unique Sync Code stored in localStorage.
+   Theme is stored at Firebase: /themes/{syncCode}.json
+   Entering the same code on different domains syncs the theme. */
+
+function portfolioGenCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c='';
+  for(let i=0;i<3;i++) c+=chars[Math.floor(Math.random()*chars.length)];
+  c+='-';
+  for(let i=0;i<3;i++) c+=chars[Math.floor(Math.random()*chars.length)];
+  return c;
+}
+function portfolioGetCode(){
+  let c=localStorage.getItem('theme-sync-code');
+  if(!c){ c=portfolioGenCode(); localStorage.setItem('theme-sync-code',c); }
+  return c;
+}
+function showSyncCodeUI(){
+  const panel=document.getElementById('sync-code-panel');
+  if(panel){ panel.style.display = panel.style.display==='none' ? 'block' : 'none'; }
+  const el=document.getElementById('sc-display');
+  if(el) el.textContent=portfolioGetCode();
+}
+function copyPortfolioCode(){
+  navigator.clipboard.writeText(portfolioGetCode()).then(()=>alert('Sync Code copied!'));
+}
+function newPortfolioCode(){
+  const c=portfolioGenCode();
+  localStorage.setItem('theme-sync-code',c);
+  const el=document.getElementById('sc-display');
+  if(el) el.textContent=c;
+}
+function applyPortfolioCode(){
+  const val=(document.getElementById('sc-input').value||'').trim().toUpperCase();
+  if(!val) return;
+  localStorage.setItem('theme-sync-code',val);
+  document.getElementById('sc-input').value='';
+  const el=document.getElementById('sc-display');
+  if(el) el.textContent=val;
+  document.getElementById('sync-code-panel').style.display='none';
+  if(syncEnabled()) fetch(THEME_DB_URL).then(r=>r.ok?r.json():null).then(applyLocal).catch(()=>{});
+}
+
+const siteThemeSync = (function(){
+  const THEME_DB_URL = () => 'https://saransh-s-website-default-rtdb.firebaseio.com/themes/' + portfolioGetCode() + '.json';
+  const html = document.documentElement;
+  const toggleEl = document.getElementById('sync-toggle');
+
+  function syncEnabled(){
+    try{ return localStorage.getItem('theme-sync-enabled') !== 'false'; }catch(e){ return true; }
+  }
+  function setEnabled(on){
+    try{ localStorage.setItem('theme-sync-enabled', on ? 'true' : 'false'); }catch(e){}
+    if(toggleEl){
+      toggleEl.style.opacity = on ? '1' : '.35';
+      toggleEl.title = on ? 'Sync is ON — click to stop syncing with my other sites' : 'Sync is OFF — click to sync with my other sites again';
+    }
+  }
+
+  function applyLocal(state){
+    if(!state) return;
+    if(state.mode){ html.dataset.theme = state.mode; setTimeout(resizeC,100); }
+    if(state.accent){
+      html.dataset.accent = state.accent;
+      document.querySelectorAll('.accent-dot').forEach(x=>x.classList.toggle('active', x.dataset.accent===state.accent));
+    }
+    try{ localStorage.setItem('site-theme-cache', JSON.stringify(state)); }catch(e){}
+  }
+
+  function push(){
+    const state = { mode: html.dataset.theme, accent: html.dataset.accent };
+    try{ localStorage.setItem('site-theme-cache', JSON.stringify(state)); }catch(e){}
+    if(!syncEnabled()) return;
+    fetch(THEME_DB_URL(), { method:'PUT', body: JSON.stringify(state) }).catch(()=>{});
+  }
+
+  setEnabled(syncEnabled());
+
+  if(syncEnabled()){
+    fetch(THEME_DB_URL()).then(r=>r.ok?r.json():null).then(applyLocal).catch(()=>{});
+  }
+
+  if(toggleEl){
+    toggleEl.addEventListener('click', ()=>{
+      const turningOn = !syncEnabled();
+      setEnabled(turningOn);
+      if(turningOn){
+        fetch(THEME_DB_URL()).then(r=>r.ok?r.json():null).then(applyLocal).catch(()=>{});
+      }
+    });
+  }
+
+  return { push, syncEnabled, applyLocal };
+})();
 
 // FIELD ERROR HELPER
 function showFieldError(msg){
